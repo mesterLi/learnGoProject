@@ -18,7 +18,7 @@ import (
 type TinyRes struct {
 	Input struct{
 		Size int64 `json:"size"`
-		Type string `json:"string"`
+		Type string `json:"type"`
 	} `json:"input"`
 	Output struct{
 		Size int64 `json:"size"`
@@ -29,7 +29,10 @@ type TinyRes struct {
 		Url string `json:"url"`
 	} `json:"output"`
 }
-
+type ImageRes struct {
+	*TinyRes
+	Name string `json:"name"`
+}
 const COMPRESS_URL = "https://tinypng.com/web/shrink"
 const CONTENT_TYPE = "application/x-www-form-urlencoded"
 
@@ -122,7 +125,8 @@ func uploadFile(path string) (string, error) {
 		return "", err
 	}
 	for _, file := range files {
-		go compress(path+"/"+file.Name(), uploadChan)
+		data, _ := ioutil.ReadFile(path+"/"+file.Name())
+		go compress(data, uploadChan)
 	}
 	for i := 0; i < len(files); i++ {
 		compressInfo := <-uploadChan
@@ -133,15 +137,13 @@ func uploadFile(path string) (string, error) {
 		<-downloadChan
 	}
 	compressAddress := compressPath+".zip"
-	defer compressZip(compressPath, compressAddress)
+	compressZip(compressPath, compressAddress)
 	elapsedTime := time.Since(startTime) / time.Millisecond
 	fmt.Println("Segment finished in %dms", elapsedTime)
 	return compressAddress, nil
 }
 
-func compress(dest string, c chan TinyRes) error {
-	fmt.Println("goroutine 请求压缩文件", dest)
-	data, _ := ioutil.ReadFile(dest)
+func compress(data []byte, c chan TinyRes) error {
 	resp, err := http.Post(COMPRESS_URL, CONTENT_TYPE, bytes.NewReader(data))
 	if err != nil {
 		fmt.Println("resp.....", err)
@@ -159,13 +161,46 @@ func compress(dest string, c chan TinyRes) error {
 	return nil
 }
 
+func uploadImg(res http.ResponseWriter, req *http.Request) {
+	var imgRes ImageRes
+	res.Header().Set("Content-Type", "application/octet-stream")
+	res.Header().Set("Access-Control-Allow-Origin", "*")
+	res.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Content-Disposition")
+	res.Header().Set("Access-Control-Expose-Headers", "Content-Disposition")
+	defer req.Body.Close()
+	if err := req.ParseForm(); err != nil {
+		fmt.Println(err)
+		res.Write([]byte("出错了"))
+		return
+	}
+	file, fileHeader, err := req.FormFile("file")
+	if err != nil {
+		fmt.Println(err)
+		res.Write([]byte("出错了"))
+		return
+	}
+	data, _ := ioutil.ReadAll(file)
+	var compressChan = make(chan TinyRes)
+	go compress(data, compressChan)
+	resData := <-compressChan
+	imgRes.TinyRes = &resData
+	imgRes.Name = fileHeader.Filename
+	jsonBody, err := json.Marshal(imgRes)
+	if err != nil {
+		fmt.Println(err)
+		res.Write([]byte("出错了"))
+		return
+	}
+	fmt.Println(string(jsonBody))
+	res.Write([]byte(string(jsonBody)))
+}
 func main() {
+	http.HandleFunc("/uploadimg", uploadImg)
 	http.HandleFunc("/upload", func(w http.ResponseWriter, f *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Accept, Content-Disposition")
 		w.Header().Set("Content-Type", "application/octet-stream")
-		w.Header().Add("Status", "12312312312312")
-		w.Header().Set("Access-Control-Expose-Headers", "Content-Disposition, Status")
+		w.Header().Set("Access-Control-Expose-Headers", "Content-Disposition")
 		if err := f.ParseForm(); err != nil {
 			w.Write([]byte("no FormData"))
 			fmt.Println("118........", err)

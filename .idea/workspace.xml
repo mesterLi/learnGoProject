@@ -2,21 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="17f8e39f-30ae-474a-8484-21d6fb25e5ff" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/ch11/process/process2_test.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ch11/process/process_test.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ch12/bfs_test/bfs_test.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ch12/context_test/context_test.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ch12/reflect_demo_test/reflect_demo_test.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ch8/point/point_test.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ch9/struct_test/struct_test.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/goSql/sql_test.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/oService/oService.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/tiny-service/main.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/tool/api.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/tool/config/config.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/tool/main.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/tool/toolStrcut.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/zipDemo/test_zip_demo.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
